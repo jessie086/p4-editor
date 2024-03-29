@@ -17,7 +17,9 @@ class List {
 public:
 
   //EFFECTS:  returns true if the list is empty
-  bool empty() const;
+  bool empty() const{
+    
+  }
 
   //EFFECTS: returns the number of elements in this List
   //HINT:    Traversing a list is really slow. Instead, keep track of the size
@@ -119,11 +121,14 @@ public:
     using reference = T&;
 
     // This operator will be used to test your code. Do not modify it.
-    // REQUIRES: Iterator is either dereferenceable or an end Iterator
+    // REQUIRES: Iterator is decrementable. All iterators associated with a
+    //           list are decrementable, including end iterators, except for
+    //           begin iterators (those equal to begin() on the list)
     // EFFECTS:  moves this Iterator to point to the previous element
     //           and returns a reference to this Iterator
     Iterator& operator--() { // prefix -- (e.g. --it)
       assert(list_ptr);
+      assert(*this != list_ptr->begin());
       if (node_ptr) {
         node_ptr = node_ptr->prev;
       } else { // decrementing an end Iterator moves it to the last element
@@ -133,7 +138,9 @@ public:
     }
 
     // This operator will be used to test your code. Do not modify it.
-    // REQUIRES: Iterator is either dereferenceable or an end Iterator
+    // REQUIRES: Iterator is decrementable. All iterators associated with a
+    //           list are decrementable, including end iterators, except for
+    //           begin iterators (those equal to begin() on the list)
     // EFFECTS:  moves this Iterator to point to the previous element
     //           and returns a copy of the original Iterator
     Iterator operator--(int /*dummy*/) { // postfix -- (e.g. it--)
@@ -141,6 +148,7 @@ public:
       operator--();
       return copy;
     }
+
 
     // REQUIRES: Iterator is dereferenceable
     // EFFECTS: returns the underlying element by pointer
