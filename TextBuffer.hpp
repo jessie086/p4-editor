@@ -12,7 +12,7 @@
 #include <list>
 #include <string>
 // Uncomment the following line to use your List implementation
-// #include "List.hpp"
+#include "List.hpp"
 
 class TextBuffer {
   // Comment out the following two lines and uncomment the two below

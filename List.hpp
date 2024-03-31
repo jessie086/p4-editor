@@ -325,7 +325,6 @@ public:
   Iterator end() const{
     Iterator *e = new Iterator(this,last->next);
     return *e; 
-
   }
 
   //REQUIRES: i is a valid, dereferenceable iterator associated with this list
@@ -348,17 +347,16 @@ public:
   //EFFECTS: Inserts datum before the element at the specified position.
   //         Returns an iterator to the the newly inserted element.
   Iterator insert(Iterator i, const T &datum){
-    List* data = i.list_ptr;
+    List data = i.list_ptr;
 
-    if (i.node_ptr == data.end()){
-      data->push_back(datum);
-      return data->last;
+    if (i.node_ptr == data.begin()){
+      data->push_front(datum);
+      return data->first;
     }
     
     zise++;
     Node *newbie = new Node(datum);
     newbie->datum = datum;
-
     newbie->next = i.node_ptr;
     newbie->prev = i.node_ptr->prev;
     i.node_ptr->prev = newbie;

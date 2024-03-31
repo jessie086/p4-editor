@@ -1,13 +1,10 @@
 #include "TextBuffer.hpp"
-#include "List.hpp"
 
 
     //EFFECTS: Creates an empty text buffer. Its cursor is at the past-the-end
   //         position, with row 1, column 0, and index 0.
-  TextBuffer::TextBuffer(){
-    row = 1;
-    column = 0;
-    index = 0;
+  TextBuffer::TextBuffer() : row(1), column(0), index(0){
+    cursor = data.end();
   }
 
   //MODIFIES: *this
@@ -42,16 +39,17 @@
   //          if appropriate to maintain all invariants.
   bool TextBuffer::backward(){
     if(cursor == data.begin()) {
-        return false;
+      return false;
     }
     --cursor;
     --index;
     if (*cursor == '\n') {
-        --row;
-        column = compute_column();
+      --row;
+      column = compute_column();
     } else {
         --column;
     }
+    return true;
   }
 
   //MODIFIES: *this
@@ -68,8 +66,8 @@
     } else {
         ++column;
     }
+    ++cursor;
     ++index;
-    // column = compute_column();
   }
 
   //MODIFIES: *this
@@ -100,7 +98,6 @@
   //NOTE:     Your implementation must update the row, column, and index
   //          if appropriate to maintain all invariants.
   void TextBuffer::move_to_row_start(){
-    column = 0;
     while (backward()) {
         if (*cursor == '\n') {
             forward();
@@ -157,13 +154,17 @@
   //          if appropriate to maintain all invariants.
   bool TextBuffer::up() {
     if (row == 1) {
-        return false;
+      return false;
     }
+
     int col = compute_column();
+
     while (*cursor != '\n') {
-        backward(); // at end of row-1
+      backward(); // at end of row-1
     }
+
     int new_col = compute_column();
+    cout << "new " << new_col << " old " << col;
     if(new_col <= col) {
         return true;
     }
@@ -258,19 +259,22 @@
   //      a correct value (i.e. the row/column INVARIANT can be broken).
   int TextBuffer::compute_column() const {
     if (cursor == data.begin()) {
-        return 0;
+      return 0;
     }
 
     int col = 0;
     Iterator it = cursor;
     --it;
 
-    for (auto it = cursor; it != data.begin(); --it) {
+    for (; it != data.begin(); --it) {
         if (*it == '\n') {
-            break;
+          cout << "break";
+          break;
         }
         ++col;
     }
+    
+    ++col;
     
     if (cursor == data.begin()) {
         ++col;
