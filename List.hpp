@@ -68,14 +68,14 @@ public:
     zise++;
     Node *n = new Node;
     if (first != nullptr) {
-      first->prev = n;
-
-      n->datum = datum;
-      n->next = first;
-      n->prev = nullptr;
-      first = n;
-    } else {
-      first = n;
+      first->prev = n; 
+    };
+    n->datum = datum;
+    n->next = first;
+    n->prev = nullptr;
+    first = n;
+    if (last == nullptr) {
+      last = first;
     }
   }
 
@@ -85,13 +85,13 @@ public:
     Node *n = new Node;
     if (last != nullptr) {
       last->next = n;
-
-      n->datum = datum;
-      n->next = nullptr;
-      n->prev = last;
-      last = n;
-    } else {
-      last = n;
+    };
+    n->datum = datum;
+    n->next = nullptr;
+    n->prev = last;
+    last = n;
+    if (first == nullptr) {
+      first = last;
     }
   }
 
@@ -213,7 +213,6 @@ public:
     // sufficient to meet these requirements.
 
 
-
     // Type aliases required to work with STL algorithms. Do not modify these.
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = T;
@@ -239,6 +238,11 @@ public:
       Iterator copy = *this;
       operator++();
       return copy;
+    }
+
+    Iterator& operator=(Iterator &other){
+      list_ptr = other.list_ptr;
+      node_ptr = other.node_ptr;
     }
 
     
@@ -301,6 +305,7 @@ public:
 
     // add any friend declarations here
     friend class List;
+    friend class TextBuffer;
 
     // construct an Iterator at a specific position in the given List
     Iterator(const List *lp, Node *np):list_ptr(lp),node_ptr(np){
@@ -343,17 +348,22 @@ public:
   //EFFECTS: Inserts datum before the element at the specified position.
   //         Returns an iterator to the the newly inserted element.
   Iterator insert(Iterator i, const T &datum){
+    List* data = i.list_ptr;
+
+    if (i.node_ptr == data.end()){
+      data->push_back(datum);
+      return data->last;
+    }
+    
     zise++;
     Node *newbie = new Node(datum);
-    newbie->next = i.node_ptr->next;
+    newbie->datum = datum;
+
+    newbie->next = i.node_ptr;
     newbie->prev = i.node_ptr->prev;
+    i.node_ptr->prev = newbie;
 
-    newbie->prev->next = newbie;
-    newbie->next->prev = newbie;
-
-    i.node_ptr = newbie;
-
-    return i;
+    return Iterator(data, newbie);
   }
 
 };//List
@@ -364,6 +374,7 @@ public:
 // (your choice). Do not change the public interface of List, although you
 // may add the Big Three if needed.  Do add the public member functions for
 // Iterator.
+
 
 
 #endif // Do not remove this. Write all your code above this line.
