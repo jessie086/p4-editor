@@ -165,7 +165,15 @@ this->last = rhs.last;
 this->datum = rhs.datum;
 return *this;
 }
+
+~Node() {
+  next = nullptr;
+  prev = nullptr;
+  datum = 0;
+}
 };
+
+
 
 //REQUIRES: list is empty
 //EFFECTS: copies all nodes from other to this
@@ -304,7 +312,11 @@ if (node_ptr == nullptr) {
   node_ptr = list_ptr->last;
   return *this;
 }
+if (node_ptr->prev) {
+  node_ptr->prev->next = node_ptr;
+}
 node_ptr = node_ptr->prev;
+
 if (node_ptr) {
 } else { // decrementing an end Iterator moves it to the last element
 node_ptr = list_ptr->last;
@@ -368,43 +380,58 @@ Iterator end() const{
 //EFFECTS: Removes a single element from the list container.
 // Returns An iterator pointing to the element that followed the
 // element erased by the function call
-Iterator erase(Iterator i){
-Node *victim = i.node_ptr;
-bool isLast = false;
-if (victim == last) {
-  isLast = true;
-}
-if (victim->prev) {
-victim->prev->next = victim->next;
-} else {
-  this->first = victim->next;
-}
-if (victim->next) {
-victim->next->prev = victim->prev;
-} else {
-  this->last = victim->prev;
-}
-if (!isLast) {
-  i.node_ptr = victim->next;
-}
-zise--;
-delete victim;
-if (isLast) {
-  cout << "null";
-  i.node_ptr = nullptr;
-}
-return i;
+Iterator erase(Iterator i) {
+    Node *victim = i.node_ptr;
+    if (victim->prev) {
+        victim->prev->next = victim->next;
+    } else {
+      first = victim->next;
+    }
+    if (victim->next) {
+        victim->next->prev = victim->prev;
+    } else {
+      last = victim->prev;
+    }
+    --zise;
+
+    Iterator n;
+    if (victim->next) {
+        n = Iterator(i.list_ptr, victim->next);
+    } else if (victim->prev) {
+        n = Iterator(i.list_ptr, victim->prev);
+        ++n;
+    } else {
+        n = Iterator(i.list_ptr, nullptr);
+    }
+
+    delete victim;
+    return n;
 }
 
 //REQUIRES: i is a valid iterator associated with this list
 //EFFECTS: Inserts datum before the element at the specified position.
 // Returns an iterator to the the newly inserted element.
 Iterator insert(Iterator i, const T &datum){
+
 if(zise == 0){
 push_front(datum);
 i.list_ptr = this;
 i.node_ptr = this->first;
-} else {
+zise++;
+return i;
+}
+
+if (i.node_ptr == nullptr) {
+  Node *newbie = new Node;
+  newbie->datum = datum;
+  newbie->next = nullptr;
+  last->next = newbie;
+  last = newbie;
+  i.node_ptr = newbie;
+  zise++;
+  return i;
+}
+
 Node *newbie = new Node;
 newbie->datum = datum;
 newbie->next = i.node_ptr;
@@ -420,7 +447,11 @@ if (newbie->next) {
 newbie->next->prev = newbie;
 } else {
   this->last = newbie;
-}
+  push_back(datum);
+  newbie->next = nullptr;
+  i.node_ptr = nullptr;
+  zise++;
+  return i;
 
 i.node_ptr = newbie;
 

@@ -5,27 +5,33 @@ using namespace std;
 
 // Add your test cases here
 
-TEST(test_list_default_ctor) {
+TEST(test_list_default_ctor)
+{
     List<int> empty_list;
     ASSERT_TRUE(empty_list.empty());
 }
 
-TEST(test_traversal) {
+TEST(test_traversal)
+{
     List<int> list;
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i)
+    {
         list.push_back(i);
     }
     int j = 0;
-    for (List<int>::Iterator it = list.begin(); it != list.end(); ++it, ++j) {
+    for (List<int>::Iterator it = list.begin(); it != list.end(); ++it, ++j)
+    {
         ASSERT_EQUAL(*it, j);
     }
     ASSERT_EQUAL(j, list.size());
 }
 
-TEST(test_copy_ctr) {
+TEST(test_copy_ctr)
+{
 
     List<int> list;
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i)
+    {
         list.push_back(i);
     }
 
@@ -34,15 +40,16 @@ TEST(test_copy_ctr) {
 
     List<int>::Iterator it = lcopy.begin();
     ASSERT_TRUE(*it == 0);
-    
+
     ++it;
     ASSERT_TRUE(*it == 1);
-    
+
     ++it;
     ASSERT_TRUE(*it == 2);
 }
 
-TEST(test_empty_list_copy_ctr) {
+TEST(test_empty_list_copy_ctr)
+{
 
     List<int> l;
     List<int> lcopy(l);
@@ -50,7 +57,8 @@ TEST(test_empty_list_copy_ctr) {
     ASSERT_TRUE(lcopy.size() == 0);
 }
 
-TEST(test_assign) {
+TEST(test_assign)
+{
 
     List<int> l;
     l.push_back(3);
@@ -64,19 +72,75 @@ TEST(test_assign) {
 
     l2 = l;
 
-   List<int>::Iterator it = l2.begin();
+    List<int>::Iterator it = l2.begin();
     ASSERT_TRUE(*it == 3);
-    
+
     ++it;
     ASSERT_TRUE(*it == 2);
-    
+
     ++it;
     ASSERT_TRUE(*it == 1);
 }
 
-//edge case: lists with different sizes?
+TEST(test_assign_different_size)
+{
 
-TEST(clear){
+    List<int> l;
+    l.push_back(4);
+    l.push_back(3);
+    l.push_back(2);
+    l.push_back(1);
+
+    List<int> l2;
+    l2.push_back(5);
+    l2.push_back(6);
+    l2.push_back(7);
+
+    l2 = l;
+
+    List<int>::Iterator it = l2.begin();
+    ASSERT_TRUE(*it == 4);
+
+    ++it;
+    ASSERT_TRUE(*it == 3);
+
+    ++it;
+    ASSERT_TRUE(*it == 2);
+
+    ++it;
+    ASSERT_TRUE(*it == 1);
+}
+
+TEST(test_assign_different_size_2)
+{
+
+    List<int> l;
+    l.push_back(4);
+    l.push_back(3);
+    l.push_back(2);
+    l.push_back(1);
+
+    List<int> l2;
+    l2.push_back(5);
+    l2.push_back(6);
+    l2.push_back(7);
+
+    l = l2;
+
+    List<int>::Iterator it = l2.begin();
+    ASSERT_TRUE(*it == 5);
+
+    ++it;
+    ASSERT_TRUE(*it == 6);
+
+    ++it;
+    ASSERT_TRUE(*it == 7);
+}
+
+// edge case: lists with different sizes?
+
+TEST(clear)
+{
     List<int> l;
     l.push_back(3);
     l.push_back(2);
@@ -86,25 +150,28 @@ TEST(clear){
     ASSERT_TRUE(l.empty());
 }
 
-TEST(test_front){
+TEST(test_front)
+{
     List<int> l;
     l.push_back(3);
     l.push_back(2);
     l.push_back(1);
 
-    ASSERT_EQUAL(l.front(),3);
+    ASSERT_EQUAL(l.front(), 3);
 }
 
-TEST(test_back){
+TEST(test_back)
+{
     List<int> l;
     l.push_back(3);
     l.push_back(2);
     l.push_back(1);
 
-    ASSERT_EQUAL(l.back(),1);
+    ASSERT_EQUAL(l.back(), 1);
 }
 
-TEST(test_clear){
+TEST(test_clear)
+{
     List<int> l;
     l.push_back(3);
     l.push_back(2);
@@ -114,9 +181,9 @@ TEST(test_clear){
     ASSERT_TRUE(l.empty());
 }
 
-
-//start to test iterator
-TEST(test_operator_equal){
+// start to test iterator
+TEST(test_operator_equal)
+{
     List<int> l;
     l.push_back(3);
     l.push_back(2);
@@ -128,7 +195,8 @@ TEST(test_operator_equal){
     ASSERT_TRUE(i == l.end());
 }
 
-TEST(test_operator_inequal){
+TEST(test_operator_inequal)
+{
     List<int> l;
     l.push_back(3);
     l.push_back(2);
@@ -139,7 +207,8 @@ TEST(test_operator_inequal){
     ASSERT_TRUE(i != l.end());
 }
 
-TEST(test_erase){
+TEST(test_erase_first)
+{
     List<int> l;
     l.push_back(3);
     l.push_back(2);
@@ -147,44 +216,116 @@ TEST(test_erase){
 
     List<int>::Iterator i = l.begin();
 
-    l.erase(i);
-    ASSERT_TRUE(l.size()==2);
+   List<int>::Iterator j = l.erase(i);
+
+    cout << *j;
+    ASSERT_TRUE(*j == 2);
+    ASSERT_TRUE(l.size() == 2);
 }
 
-TEST(test_insert){
+TEST(test_erase_second)
+{
     List<int> l;
     l.push_back(3);
     l.push_back(2);
     l.push_back(1);
-   
+
+    List<int>::Iterator i = l.begin();
+    ++i;
+
+    List<int>::Iterator j = l.erase(i);
+
+    cout << *j;
+    ASSERT_TRUE(*j == 1);
+    ASSERT_TRUE(l.size() == 2);
+}
+
+TEST(test_erase_multiple)
+{
+    List<int> l;
+    l.push_back(3);
+    l.push_back(2);
+    l.push_back(1);
+
+    List<int>::Iterator i = l.begin();
+
+    List<int>::Iterator j = l.erase(i);
+    j = l.erase(j);
+
+    cout << *j;
+    ASSERT_TRUE(*j == 1);
+    ASSERT_TRUE(l.size() == 1);
+}
+
+TEST(test_insert)
+{
+    List<int> l;
+    l.push_back(3);
+    l.push_back(2);
+    l.push_back(1);
+
     List<int>::Iterator i = l.begin();
     int t = 9;
-    l.insert(i,t);
+    l.insert(i, t);
     --i;
 
     ASSERT_TRUE(*i == 9);
 }
 
-TEST(test_insert_to_empty_list){
+TEST(test_insert_multiple)
+{
+    List<int> l;
+    l.push_back(3);
+    l.push_back(2);
+    l.push_back(1);
+
+    List<int>::Iterator i = l.begin();
+    int t = 9;
+    l.insert(i, t);
+    --i;
+    l.insert(i, 8);
+    --i;
+
+    ASSERT_TRUE(*(i) == 8);
+    ASSERT_TRUE(*(++i) == 9);
+}
+
+TEST(test_insert_to_empty_list)
+{
     List<int> empty_list;
-    
+
     List<int>::Iterator i = empty_list.begin();
     int t = 9;
-    empty_list.insert(i,t);
+    empty_list.insert(i, t);
     --i;
 
     ASSERT_TRUE(*i == 9);
 }
 
+TEST(test_insert_to_end)
+{
+    List<int> l;
+    l.push_back(3);
+    l.push_back(2);
+    l.push_back(1);
 
+    List<int>::Iterator i = l.end();
+    int t = 9;
+    l.insert(i, t);
+    --i;
+   
 
-TEST(test_equal_operator){
-    List<int>:: Iterator i1;
-    List<int>:: Iterator i2;
+    ASSERT_TRUE(*(i) == 9);
+}
 
-    List<int> l; 
-    l.push_back(1); 
-    l.push_back(2); 
+TEST(test_equal_operator)
+{
+    List<int>::Iterator i1;
+    List<int>::Iterator i2;
+
+    List<int> l;
+    l.push_back(1);
+    l.push_back(2);
     l.push_back(3);
 
     i1 = l.begin();
@@ -198,17 +339,16 @@ TEST(test_equal_operator){
     ASSERT_TRUE(!(i1 == i2));
 }
 
-
-TEST(test_insert_more){
-    List<int>:: Iterator i1;
-    List<int>:: Iterator i2;
+TEST(test_insert_more)
+{
+    List<int>::Iterator i1;
+    List<int>::Iterator i2;
 
     List<int> l;
     l.push_back(1);
     l.push_back(2);
-    l.push_back(3);    
+    l.push_back(3);
     i1 = l.begin();
-
 
     ASSERT_TRUE(!(i1 == i2));
     ++i1;
@@ -219,29 +359,29 @@ TEST(test_insert_more){
     ASSERT_TRUE(!(i1 == i2));
 }
 
-TEST(test_erase_at_end){
+TEST(test_erase_at_end)
+{
     List<int> l;
     l.push_back(3);
     l.push_back(2);
     l.push_back(1);
     l.push_back(23);
 
-    List<int>::Iterator j = l.begin();
-    
-    ++j;
-    ++j;
-    ++j;
+    List<int>::Iterator i = l.end();
 
-    l.erase(j);
-    cout << l.size();
-    cout << *j << *(--l.end());
+    --i;
 
-    ASSERT_EQUAL(j, l.end());
+    i = l.erase(i);
+    List<int>::Iterator j = l.end();
+
+    ASSERT_EQUAL(*(--i), *(--j))
+    ASSERT_EQUAL(i, j);
+    ASSERT_EQUAL(l.size(), 3);
 }
 
 TEST(test)
 {
-    
+
     List<int> my_list;
     int value = 0;
 
@@ -253,7 +393,7 @@ TEST(test)
 
     my_list.front() = 73;
     my_list.back() = 73;
-   
+
     my_list.pop_front();
     my_list.pop_back();
 
@@ -284,7 +424,6 @@ TEST(test)
     b = my_list.end() != iter3;
     assert(!b);
     ++iter;
-
 
     value = *iter;
 
