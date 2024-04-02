@@ -21,19 +21,16 @@ public:
   }
 
   List(List& ls){
-    first = ls.first;
     copy_all(ls);
   }
 
   List& operator=(const List &rhs){
       clear();
-      first = rhs.first;
       copy_all(rhs);
       return *this;
     }
 
   ~List(){
-    first = nullptr;
     clear();
   }
 
@@ -65,18 +62,33 @@ public:
 
   //EFFECTS:  inserts datum into the front of the list
   void push_front(const T &datum){
-    zise++;
-    Node *n = new Node;
-    if (first != nullptr) {
-      first->prev = n; 
-    };
-    n->datum = datum;
-    n->next = first;
-    n->prev = nullptr;
-    first = n;
-    if (last == nullptr) {
-      last = first;
+
+    if (first == nullptr) {
+      first = new Node();
+      first->datum = datum;
+      first->next = nullptr;
+      first->prev = nullptr;
+      return;
     }
+
+    // Node *n = new Node();
+
+    // if (first != nullptr) {
+      
+    // }
+    // first->prev = n; 
+    // n->datum = datum;
+    // n->next = first;
+    // n->prev = nullptr;
+
+    // cout << "here" << endl;
+    
+    // first = n;
+    // if (last == nullptr) {
+    //   last = first;
+    //   last->next = nullptr;
+    // }
+    // zise++;
   }
 
   //EFFECTS:  inserts datum into the back of the list
@@ -89,9 +101,11 @@ public:
     n->datum = datum;
     n->next = nullptr;
     n->prev = last;
+
     last = n;
     if (first == nullptr) {
       first = last;
+      first->prev = nullptr;
     }
   }
 
@@ -134,22 +148,36 @@ public:
 
 private:
   //a private type
+
   struct Node {
     Node *next;
     Node *prev;
     T datum;
+
+    Node() : next(nullptr), prev(nullptr), datum(0){
+    }
   };
 
   //REQUIRES: list is empty
   //EFFECTS:  copies all nodes from other to this
   void copy_all(const List<T> &other){
     
+    if (!other.first) {
+      return;
+    }
+
+    if (!other.last) {
+      return;
+    }
+
     Node *ptr = other.first;
     Node *prev_ptr = nullptr;
     
     Node *f = new Node;
     first = f;
+
     f->datum = ptr->datum;
+    
     f->next = nullptr;
     f->prev = nullptr;
     ptr = ptr->next;
@@ -160,7 +188,10 @@ private:
       n->datum = ptr->datum;
       n->next = nullptr;
       n->prev = prev_ptr; // set prev to previous pointer
-      prev_ptr->next = n; // set next of previous pointer to current address
+      if (prev_ptr) {
+        prev_ptr->next = n; // set next of previous pointer to current address
+      }
+       
       prev_ptr = n; // set previous pointer to current address
       
       ptr = ptr->next; //update the pointer indicating node in other list
@@ -265,11 +296,11 @@ public:
       assert(list_ptr);
       assert(*this != list_ptr->begin());
       node_ptr = node_ptr->prev;
-      // if (node_ptr) {
+      if (node_ptr) {
         
-      // } else { // decrementing an end Iterator moves it to the last element
-      //   node_ptr = list_ptr->last;
-      // }
+      } else { // decrementing an end Iterator moves it to the last element
+        node_ptr = list_ptr->last;
+      }
       return *this;
     }
 
@@ -332,10 +363,17 @@ public:
   //         element erased by the function call
   Iterator erase(Iterator i){
     assert(i.node_ptr);
+    
     zise--;
     Node *victim = i.node_ptr;
-    victim->prev->next = victim->next;
-    victim->next->prev = victim->prev;
+    if (victim->prev) {
+      victim->prev->next = victim->next;
+    }
+    
+    if (victim->next) {
+      victim->next->prev = victim->prev;
+    }
+    
     i.node_ptr = victim->next;
     delete victim;
     
@@ -346,18 +384,32 @@ public:
   //EFFECTS: Inserts datum before the element at the specified position.
   //         Returns an iterator to the the newly inserted element.
   Iterator insert(Iterator i, const T &datum){
-    assert(i.node_ptr);
+    assert(i.node_ptr != nullptr);
+
+    Node *victim = i.node_ptr;
+
+    if(zise == 0){
+      push_front(datum);
+      i.list_ptr = this;
+      i.node_ptr = this->first;
+    } else {
+      Node *newbie = new Node;
+      newbie->datum = datum;
+      newbie->next = i.node_ptr;
+      newbie->prev = i.node_ptr->prev;
+
+      if (newbie->prev) {
+        newbie->prev->next = newbie;
+      } 
+      
+      if (newbie->next) {
+        newbie->next->prev = newbie;
+      }
+      
+      i.node_ptr = newbie;
+
+    }
     zise++;
-    Node *newbie = new Node;
-    newbie->datum = datum;
-    newbie->next = i.node_ptr;
-    newbie->prev = i.node_ptr->prev;
-
-    newbie->prev->next = newbie;
-    newbie->next->prev = newbie;
-
-    i.node_ptr = newbie;
-
     return i;
   }
 

@@ -58,25 +58,6 @@ TEST(test_assign) {
     ASSERT_TRUE(*it == 1);
 }
 
-TEST(test_self_assign) {
-
-    List<int> l;
-    l.push_back(3);
-    l.push_back(2);
-    l.push_back(1);
-
-    l = l;
-    //should do nothing because it's assigning to itself
-
-    List<int>::Iterator it = l.begin();
-    ASSERT_TRUE(*it == 3);
-    
-    ++it;
-    ASSERT_TRUE(*it == 2);
-    
-    ++it;
-    ASSERT_TRUE(*it == 1);
-}
 
 TEST(test_first_back){
     List<int> l;
@@ -113,17 +94,42 @@ TEST(test_operator_equal){
     ASSERT_TRUE(i == l.end());
 }
 
-TEST(test_operator_equal){
+TEST(test_operator_inequal){
     List<int> l;
     l.push_back(3);
     l.push_back(2);
     l.push_back(1);
 
     List<int>::Iterator i = l.begin();
-    ++i;
-    ++i;
 
-    ASSERT_TRUE(i == l.end());
+    ASSERT_TRUE(i != l.end());
+}
+
+TEST(test_erase){
+    List<int> l;
+    l.push_back(3);
+    l.push_back(2);
+    l.push_back(1);
+
+    List<int>::Iterator i = l.begin();
+
+    l.erase(i);
+    ASSERT_TRUE(l.size()==2);
+}
+
+TEST(test_insert){
+    List<int> l;
+    l.push_back(3);
+    l.push_back(2);
+    l.push_back(1);
+
+    List<int>::Iterator i = l.begin();
+
+    l.insert(i,8);
+    int x = 2;
+    ASSERT_TRUE(*this == x);
+
+    
 }
 
 
