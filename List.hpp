@@ -27,9 +27,9 @@ public:
 
   List& operator=(const List &rhs){
       clear();
-      first = rhs->first;
+      first = rhs.first;
       copy_all(rhs);
-      return this;
+      return *this;
     }
 
   ~List(){
@@ -53,14 +53,14 @@ public:
   //EFFECTS: Returns the first element in the list by reference
   T & front(){
     assert(!empty());
-    return first;
+    return first->datum;
   }
 
   //REQUIRES: list is not empty
   //EFFECTS: Returns the last element in the list by reference
   T & back(){
     assert(!empty());
-    return last;
+    return last->datum;
   }
 
   //EFFECTS:  inserts datum into the front of the list
@@ -226,35 +226,33 @@ public:
     }
 
     //prefix
-    Iterator& operator++(){
+    Iterator operator++(){
       assert(node_ptr);
       node_ptr = node_ptr->next;
       return *this;
     }
 
     //postfix
-    Iterator& operator++(int){
+    Iterator operator++(int){
       assert(node_ptr);
       Iterator copy = *this;
-      operator++();
+      node_ptr = node_ptr->next;
       return copy;
     }
 
-    Iterator& operator=(Iterator &other){
+    Iterator operator=(Iterator other){
       list_ptr = other.list_ptr;
       node_ptr = other.node_ptr;
+      return *this;
     }
 
     
-    bool& operator==(const Iterator& rhs) {
-      assert(list_ptr == rhs.list_ptr);
-      isEqual = node_ptr == rhs.node_ptr;
-      return isEqual;
+    bool operator==(const Iterator rhs) const {
+      return (list_ptr == rhs.list_ptr)&&(node_ptr == rhs.node_ptr);
     }
 
-    bool& operator!=(const Iterator& rhs) {
-      isNotEqual = node_ptr != rhs.node_ptr;
-      return isNotEqual;
+    bool operator!=(const Iterator rhs) const{
+      return node_ptr != rhs.node_ptr;
     }
 
     // This operator will be used to test your code. Do not modify it.
@@ -263,14 +261,15 @@ public:
     //           begin iterators (those equal to begin() on the list)
     // EFFECTS:  moves this Iterator to point to the previous element
     //           and returns a reference to this Iterator
-    Iterator& operator--() { // prefix -- (e.g. --it)
+    Iterator operator--() { // prefix -- (e.g. --it)
       assert(list_ptr);
       assert(*this != list_ptr->begin());
-      if (node_ptr) {
-        node_ptr = node_ptr->prev;
-      } else { // decrementing an end Iterator moves it to the last element
-        node_ptr = list_ptr->last;
-      }
+      node_ptr = node_ptr->prev;
+      // if (node_ptr) {
+        
+      // } else { // decrementing an end Iterator moves it to the last element
+      //   node_ptr = list_ptr->last;
+      // }
       return *this;
     }
 
@@ -281,8 +280,10 @@ public:
     // EFFECTS:  moves this Iterator to point to the previous element
     //           and returns a copy of the original Iterator
     Iterator operator--(int /*dummy*/) { // postfix -- (e.g. it--)
+      assert(list_ptr);
+      assert(*this != list_ptr->begin());
       Iterator copy = *this;
-      operator--();
+      node_ptr = node_ptr->prev;
       return copy;
     }
 
@@ -293,15 +294,13 @@ public:
     //       member variable f, then it->f accesses f on the
     //       underlying T element.
     T* operator->() const {
-      return &operator*();
+      return &(node_ptr->datum);
     }
 
   private:
     const List *list_ptr; //pointer to the List associated with this Iterator
     Node *node_ptr; //current Iterator position is a List node
     // add any additional necessary member variables here
-    bool isEqual;
-    bool isNotEqual;
 
     // add any friend declarations here
     friend class List;
@@ -317,14 +316,13 @@ public:
 
   // return an Iterator pointing to the first element
   Iterator begin() const{
-    Iterator *f = new Iterator(this,first);
-    return *f;
+    return Iterator(this,first);
   }
 
   // return an Iterator pointing to "past the end"
   Iterator end() const{
-    Iterator *e = new Iterator(this,last->next);
-    return *e; 
+    return Iterator(this,last->next);
+
   }
 
   //REQUIRES: i is a valid, dereferenceable iterator associated with this list
@@ -333,13 +331,14 @@ public:
   //         Returns An iterator pointing to the element that followed the
   //         element erased by the function call
   Iterator erase(Iterator i){
+    assert(i.node_ptr);
     zise--;
     Node *victim = i.node_ptr;
-    *victim->prev->next = victim->next;
-    *victim->next->prev = victim->prev;
+    victim->prev->next = victim->next;
+    victim->next->prev = victim->prev;
+    i.node_ptr = victim->next;
     delete victim;
     
-    i++;
     return i;
   }
 
@@ -347,21 +346,19 @@ public:
   //EFFECTS: Inserts datum before the element at the specified position.
   //         Returns an iterator to the the newly inserted element.
   Iterator insert(Iterator i, const T &datum){
-    List data = i.list_ptr;
-
-    if (i.node_ptr == data.begin()){
-      data->push_front(datum);
-      return data->first;
-    }
-    
+    assert(i.node_ptr);
     zise++;
-    Node *newbie = new Node(datum);
+    Node *newbie = new Node;
     newbie->datum = datum;
     newbie->next = i.node_ptr;
     newbie->prev = i.node_ptr->prev;
-    i.node_ptr->prev = newbie;
 
-    return Iterator(data, newbie);
+    newbie->prev->next = newbie;
+    newbie->next->prev = newbie;
+
+    i.node_ptr = newbie;
+
+    return i;
   }
 
 };//List

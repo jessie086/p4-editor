@@ -1,4 +1,5 @@
 #include "TextBuffer.hpp"
+#include <cassert>
 
 
     //EFFECTS: Creates an empty text buffer. Its cursor is at the past-the-end
@@ -39,6 +40,7 @@
   //          if appropriate to maintain all invariants.
   bool TextBuffer::backward(){
     if(cursor == data.begin()) {
+      row = 1;
       return false;
     }
     --cursor;
@@ -62,9 +64,10 @@
   void TextBuffer::insert(char c){
     cursor = data.insert(cursor, c);
     if (c == '\n') {
-        ++row; column = 0;
+      ++row;
+      column = 0;
     } else {
-        ++column;
+      ++column;
     }
     ++cursor;
     ++index;
@@ -153,18 +156,23 @@
   //NOTE:     Your implementation must update the row, column, and index
   //          if appropriate to maintain all invariants.
   bool TextBuffer::up() {
-    if (row == 1) {
-      return false;
-    }
-
     int col = compute_column();
-
+    int row_copy = row;
+    int column_copy = column;
+    int index_copy = index;
+    Iterator it = cursor;
+    
     while (*cursor != '\n') {
-      backward(); // at end of row-1
+        if (!backward()) {
+            row = row_copy;
+            column = column_copy;
+            index = index_copy;
+            cursor = it;
+            return false;
+        }
     }
 
     int new_col = compute_column();
-    cout << "new " << new_col << " old " << col;
     if(new_col <= col) {
         return true;
     }
@@ -268,15 +276,12 @@
 
     for (; it != data.begin(); --it) {
         if (*it == '\n') {
-          cout << "break";
           break;
         }
         ++col;
     }
-    
-    ++col;
-    
-    if (cursor == data.begin()) {
+
+    if (it == data.begin()) {
         ++col;
     }
     return col;
