@@ -200,7 +200,6 @@ private:
     {
       next = nullptr;
       prev = nullptr;
-      datum = 0;
     }
   };
 
