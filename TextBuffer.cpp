@@ -165,6 +165,17 @@
     int index_copy = index;
     Iterator it = cursor;
     
+    bool atEnd = false;
+
+    if (size() == 0) {
+      return false;
+    }
+
+    if (is_at_end()) {
+      atEnd = true;
+      backward();
+    }
+
     while (*cursor != '\n') {
         if (!backward()) {
             row = row_copy;
@@ -182,6 +193,12 @@
     for (; new_col != col; --new_col) {
         backward();
     }
+
+    if (atEnd) {
+      forward();
+    }
+
+
     return true;
   }
 
@@ -203,6 +220,10 @@
     int index_copy = index;
     Iterator it = cursor;
     
+    if (size() == 0) {
+      return false;
+    }
+
     while (*cursor != '\n') {
         if (!forward()) {
             row = row_copy;
