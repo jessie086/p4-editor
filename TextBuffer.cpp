@@ -118,6 +118,9 @@
   //          if appropriate to maintain all invariants.
   void TextBuffer::move_to_row_end(){
     while (forward()) {
+        if (is_at_end()) {
+          break;
+        }
         if (*cursor == '\n') {
             break;
         }
