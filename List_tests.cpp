@@ -26,6 +26,22 @@ TEST(test_traversal)
     ASSERT_EQUAL(j, list.size());
 }
 
+TEST(test_empty){
+    List<int> l;
+    l.push_back(1);
+    l.pop_back();
+    ASSERT_TRUE(l.empty());
+}
+
+TEST(test_size){
+    List<int> l;
+    l.push_back(1);
+    l.push_front(3);
+    l.push_back(4);
+    l.pop_back();
+    ASSERT_TRUE(l.size() == 2);
+}
+
 TEST(test_copy_ctr)
 {
 
@@ -137,9 +153,31 @@ TEST(test_assign_different_size_2)
     ASSERT_TRUE(*it == 7);
 }
 
+TEST(test_self_assign)
+{
+
+    List<int> l;
+    l.push_back(3);
+    l.push_back(2);
+    l.push_back(1);
+
+    List<int> &l2 = l;
+
+    l = l2;
+
+    List<int>::Iterator it = l.begin();
+    ASSERT_TRUE(*it == 3);
+
+    ++it;
+    ASSERT_TRUE(*it == 2);
+
+    ++it;
+    ASSERT_TRUE(*it == 1);
+}
+
 // edge case: lists with different sizes?
 
-TEST(clear)
+TEST(test_clear)
 {
     List<int> l;
     l.push_back(3);
@@ -170,17 +208,6 @@ TEST(test_back)
     ASSERT_EQUAL(l.back(), 1);
 }
 
-TEST(test_clear)
-{
-    List<int> l;
-    l.push_back(3);
-    l.push_back(2);
-    l.push_back(1);
-
-    l.clear();
-    ASSERT_TRUE(l.empty());
-}
-
 // start to test iterator
 TEST(test_operator_equal)
 {
@@ -207,6 +234,40 @@ TEST(test_operator_inequal)
     ASSERT_TRUE(i != l.end());
 }
 
+TEST(test_begin){
+    List<int> l;
+    l.push_back(3);
+    l.push_back(2);
+    l.push_back(1);
+    List<int>::Iterator it = l.begin();
+    
+    ++it;
+    ++it;
+    ++it;
+    --it;
+    --it;
+    --it;
+
+    ASSERT_TRUE(it == l.begin());
+}
+
+TEST(test_end){
+    List<int> l;
+    l.push_back(3);
+    l.push_back(2);
+    l.push_back(1);
+    List<int>::Iterator it = l.end();
+    
+    --it;
+    --it;
+    --it;
+    ++it;
+    ++it;
+    ++it;
+
+    ASSERT_TRUE(it == l.end());
+}
+
 TEST(test_erase_first)
 {
     List<int> l;
@@ -218,7 +279,6 @@ TEST(test_erase_first)
 
    List<int>::Iterator j = l.erase(i);
 
-    cout << *j;
     ASSERT_TRUE(*j == 2);
     ASSERT_TRUE(l.size() == 2);
 }
@@ -235,7 +295,6 @@ TEST(test_erase_second)
 
     List<int>::Iterator j = l.erase(i);
 
-    cout << *j;
     ASSERT_TRUE(*j == 1);
     ASSERT_TRUE(l.size() == 2);
 }

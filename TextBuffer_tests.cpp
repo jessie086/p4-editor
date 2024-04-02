@@ -196,6 +196,3 @@ TEST(test_stringify) {
 }
 
 TEST_MAIN()
-
-
-TEST_MAIN()
